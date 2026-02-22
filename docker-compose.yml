@@ -1,0 +1,20 @@
+services:
+  website:
+    build: .
+    container_name: website
+    ports:
+      - "${WEBSITE_PORT:-80}:80"
+      - "${WEBSITE_SSL_PORT:-443}:443"
+    volumes:
+      - ./log:/var/log
+      - ./www:/var/www
+      - ./additional_config:/mnt/additional_config:ro
+      - letsencrypt:/etc/letsencrypt
+    restart: unless-stopped
+    environment:
+      - DOMAIN=${DOMAIN}
+      - CERTBOT_ENABLED=${CERTBOT_ENABLED}
+      - CERTBOT_EMAIL=${CERTBOT_EMAIL}
+
+volumes:
+  letsencrypt:

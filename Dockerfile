@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install -y \
 RUN rm -f /etc/nginx/sites-enabled/default
 RUN rm -rf /var/lib/apt/lists/*
 
-COPY docker_files/torrc /etc/tor/torrc
 COPY docker_files/nginx.conf /etc/nginx/sites-available/nginx.conf
 COPY docker_files/nginx.ssl.conf /etc/nginx/sites-available/nginx.ssl.conf
 COPY docker_files/supervisord.conf /etc/supervisor/conf.d/services.conf

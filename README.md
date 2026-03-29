@@ -1,20 +1,20 @@
 # nanowebserver
 
-A minimal dockerized web server with Nginx, Certbot, PHP and Supervisor.
+A minimal dockerized web server with Nginx, Certbot, PHP, Supervisord and Tor.
 
 ## Usage
 
-Create a `.env` file in the root directory with the variable `DOMAIN` (see `.env.example`), then run:
+Create an `.env` file in the root directory with the variable `DOMAIN=mywebsite.com` (see `.env.example`), then run:
 
 ```bash
 docker-compose up -d
 ```
 
-The website is served from the directory `www`, which is mounted in `/var/www` inside the container.
+That's it. The website is served from the directory `www`, which is mounted in `/var/www` inside the container.
 
 ## Customization
 
-Use a `docker-compose.override.yml` to extend the stack and configuration, for example, if you want to use a Traefik proxy and add an API key:
+Create a file `docker-compose.override.yml` to extend the stack and configuration. For example, if you want to use a Traefik proxy and add an API key:
 
 ```yml
 services:
@@ -48,13 +48,13 @@ Logs are stored in the directory `log` mounted in `/var/log`.
 
 The directory `letsencrypt` is mounted in `/etc/letsencrypt`. If you enable SSL (see below), your will find your private key there: keep it safe!
 
-## Shell to your container
+## Open a shell to the container while it's running
 
 ```bash
 docker exec -it nanowebserver /bin/bash
 ```
 
-## Sample Recipe: add Tor identity
+## Sample Recipe: add a Tor identity
 
 Place your Tor identity files in `additional_config/hidden_service/` and create a file `configure.sh` with something like:
 

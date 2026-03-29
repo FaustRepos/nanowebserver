@@ -14,9 +14,9 @@ if [ "${CERTBOT_ENABLED}" = "true" ]; then
     echo "0 3 * * * root certbot renew --quiet --deploy-hook 'nginx -s reload'" > /etc/cron.d/certbot-renew
     chmod 0644 /etc/cron.d/certbot-renew
 
-    ln -sf /etc/nginx/sites-available/nginx.ssl.conf /etc/nginx/sites-enabled/default
+    ln -sf /etc/nginx/sites-available/site.ssl.conf /etc/nginx/sites-enabled/default
 else
-    ln -sf /etc/nginx/sites-available/nginx.conf /etc/nginx/sites-enabled/default
+    ln -sf /etc/nginx/sites-available/site.conf /etc/nginx/sites-enabled/default
 fi
 
 if [ -f /mnt/additional_config/additional_config.sh ]; then

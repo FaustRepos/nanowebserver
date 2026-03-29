@@ -1,13 +1,13 @@
 services:
   website:
+    container_name: nanowebserver
     build: .
     restart: unless-stopped
     volumes:
       - ./log:/var/log
       - ./www:/var/www
+      - ./docker_files:/mnt/docker_files:ro
       - ./additional_config:/mnt/additional_config:ro
       - ./letsencrypt:/etc/letsencrypt
     environment:
       - DOMAIN=${DOMAIN-localhost}
-      - CERTBOT_ENABLED=${CERTBOT_ENABLED-false}
-      - CERTBOT_EMAIL=${CERTBOT_EMAIL-admin@${DOMAIN}}

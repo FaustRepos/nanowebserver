@@ -1,13 +1,52 @@
+name: nanowebserver
+
 services:
-  website:
-    container_name: nanowebserver
-    build: .
+  web:
+    image: nginx:latest
+    depends_on:
+      - php
     restart: unless-stopped
     volumes:
-      - ./log:/var/log
       - ./www:/var/www
-      - ./docker_files:/mnt/docker_files:ro
-      - ./additional_config:/mnt/additional_config:ro
-      - ./letsencrypt:/etc/letsencrypt
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled:ro
+    networks:
+      - php
+      - tor
     environment:
       - DOMAIN=${DOMAIN-localhost}
+
+  php:
+    build:
+      dockerfile_inline: |
+        FROM php:8.2-fpm
+        RUN cp /usr/local/etc/php/php.ini-production /usr/local/etc/php/base.ini
+    restart: unless-stopped
+    volumes:
+      - ./www:/var/www
+      - ./php/php.ini:/usr/local/etc/php/conf.d/php.ini:ro
+      - ./php-fpm/www.conf:/usr/local/etc/php-fpm.d/www.conf:ro
+    networks:
+      - php
+
+  tor:
+    build:
+      dockerfile_inline: |
+        FROM alpine:latest
+        RUN apk add --no-cache tor
+        COPY tor/torrc /etc/tor/torrc
+        COPY tor/hidden_service /var/lib/tor/hidden_service
+        RUN adduser -S debian-tor
+        RUN chown -R debian-tor /var/lib/tor
+        RUN chmod -R 700 /var/lib/tor
+        USER debian-tor
+        ENTRYPOINT ["/usr/bin/tor", "-f", "/etc/tor/torrc"]
+    restart: unless-stopped
+    networks:
+      - tor
+
+networks:
+  php:
+    driver: bridge
+  tor:
+    driver: bridge

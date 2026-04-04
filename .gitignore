@@ -1,4 +1,4 @@
 *.env
 *.override.*
 www/
-!www/uploads/.gitignore
+!www/robots.txt

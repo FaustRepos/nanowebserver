@@ -1,15 +1,13 @@
 # nanowebserver
 
-A minimal dockerized web server with Nginx, PHP and Tor.
+A minimal dockerized web server with Apache, PHP and Tor.
 
 ## Usage
 
-1. Make sure the directory `log` is writable
-2. Create an `.env` with the variable `DOMAIN=mywebsite.com` (see `.env.example`)
-3. Create a `site.conf` in `nginx/sites-enabled/` (copying `site.conf.example` is enough for a basic setup)
-4. Run  `docker compose up`
+1. Put your website files in `www`
+2. Run  `docker compose up -d`
 
-That's it. The website is served from the directory `www`, which is mounted in `/var/www` inside the container.
+That's it: `www` is mounted to `/htdocs` inside the container and served by Apache.
 
 ## Customizing the application
 
@@ -22,13 +20,9 @@ services:
   web:
     environment:
       - API_KEY=abcd
-
-networks:
-  traefik_traefik:
-    external: true
 ```
 
-## Traefik basic configuration
+## Traefik configuration
 
 In your `docker-compose.override.yml`:
 
@@ -36,7 +30,7 @@ In your `docker-compose.override.yml`:
 services:
   web:
     networks:
-      - default
+      - tor
       - traefik_traefik
     labels:
       - "traefik.enable=true"
@@ -50,37 +44,6 @@ networks:
     external: true
 ```
 
-## Open a shell to a container while it's running
-
-```bash
-docker exec -it mycoolsite-web-1 /bin/bash
-```
-
-## Logging
-
-Logs are stored in the directory `log` mounted in `/var/log` (make sure it's writable).
-
-## Nginx
-
-`nginx/nginx.conf` is mounted to `/etc/nginx/nginx.conf`.
-
-`nginx/sites-enabled/` is mounted to `/etc/nginx/sites-enabled/`.
-
-## PHP
-
-`php/php.ini` is mounted to `/usr/local/etc/php/conf.d/php.ini` and parsed after the base configuration.
-
-`php-fpm/www.conf` is mounted to `/usr/local/etc/php-fpm.d/www.conf`.
-
 ## Tor
 
-`tor/hidden_service` is copied (**not** mounted) to `/var/lib/tor/hidden_service`. Place your Tor identity (`hostname` and keys) there.
-
-You can disable Tor in your `docker-compose.override.yml`:
-
-```yml
-services:
-  tor:
-    profiles:
-      - donotstart
-```
+`hidden_service` contents are copied (**not** mounted) to `/var/lib/tor/hidden_service`. Place your Tor identity (`hostname` and keys) there.
